@@ -1,15 +1,54 @@
-<script setup>
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+<script>
+// import { RouterLink, RouterView } from 'vue-router'
+// import HelloWorld from './components/HelloWorld.vue'
+import axios from 'axios';
+
+
+export default{
+data(){
+  return {
+    employees: [],
+    employee_details: null
+  }
+},
+async mounted() {
+  await axios.get("http://localhost:8000/api/employee").then((response) =>{
+    console.log(response.data.data);
+    console.log(response.status);
+    this.employees = response.data.data;
+  }).catch((error) => {
+
+  });
+
+  
+  // await axios.post()
+},
+methods: {
+  async onShowEmployeeDetails(id){
+      var response = await axios.get(`http://localhost:8000/api/employee/${id}`);
+      this.employee_details = response.data.data;
+  },
+ async onCreateEmployee(){
+    var response = await axios.post(`http://localhost:8000/api/employee`);
+  }
+},
+}
 </script>
 
 <template>
   <header>
     <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
+    <ol>
+      <li v-for="element of employees" :key="element" @click="onShowEmployeeDetails(element.id)">Employee Name:{{element.name}}</li>
+    </ol>
     <div class="wrapper">
       <HelloWorld msg="You did it!" />
-
+      <div class="d-flex flex-column gap-3">
+        <span>Name: {{employee_details?.name}}</span> 
+        <span>Employee ID: {{employee_details?.id}}</span> 
+        <span>Gender: {{employee_details?.gender}}</span> 
+        <span>Birthday: {{employee_details?.birthdate}}</span> 
+      </div>
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
