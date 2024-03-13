@@ -1,23 +1,19 @@
 <script>
-// import { RouterLink, RouterView } from 'vue-router'
-// import HelloWorld from './components/HelloWorld.vue'
-import router from '@/router';
 import axios from 'axios';
-
 export default{
 data(){
   return {
-    employees: [],
-    employee_details: null
+    employee: [
+    ],
   }
 },
 async mounted() {
   await axios.get("http://localhost:8000/api/employee").then((response) =>{
     console.log(response.data.data);
     console.log(response.status);
-    this.employees = response.data.data;
+    this.employee = response.data.data;
   }).catch((error) => {
-
+      console.error(error);
   });
 },
 methods: {
@@ -25,53 +21,48 @@ methods: {
       var response = await axios.get(`http://localhost:8000/api/employee/${id}`);
       this.employee_details = response.data.data;
   },
- async onCreateEmployee(){
-      var response = await axios.post(`http://localhost:8000/api/employee`);
-  }
-},
-}
+}}
 </script>
 
 <template>
-  <table class="table table-dark table table-hover">
-    <thead class="text-center">
+  <table class="table table-dark table table-hover my-5 mx-auto table-bordered w-75">
+      <thead class="text-center">
         <tr>
+          <th scope="col">ID</th>
           <th scope="col">NAME</th>
           <th scope="col">EMPLOYEE ID</th>
           <th scope="col">GENDER</th>
           <th scope="col">BIRTHDAY</th>
+          <th scope="col">ACTION</th>
         </tr>
-    </thead>
-
-    <tbody class="text-center">
-      <tr  v-for="element of employees" :key="element" @click="$router.push({name: 'employee.details', params: {id: element.id} })">
-        <td class="table-light">{{element.name}}</td>
-        <td class="table-light">{{element.id}}</td>
-        <td class="table-light">{{element.gender}}</td>
-        <td class="table-light">{{element.birthday}}</td>
-      </tr>
-    </tbody>
+      </thead>
+      
+      <tbody class="text-center">
+        <tr v-for="element of employee" :key="element" @click="$router.push({name: 'employee.details', params: {id: element.id} })">
+          <td class="table-light">{{element.id}}</td>
+          <td class="table-light">{{element.name}}</td>
+          <td class="table-light">{{element.id}}</td>
+          <td class="table-light">{{element.gender}}</td>
+          <td class="table-light">{{element.birthday}}</td>
+          <td class="table-light d-flex gap-3 justify-content-center">
+            <button type="button" class="btn btn-dark" @click.stop="$router.push('/update')">EDIT</button>
+            <button type="button" class="btn btn-dark">DELETE</button>
+          </td>
+        </tr>
+      </tbody>    
   </table>
-  
+
   <div>
-    <button type="button" class="btn btn-primary mx-5" @click="$router.push('/about')">Add</button>
+    <button type="button" class="btn btn-warning gap px-4" style="margin-left: 15rem;"
+    @click.stop="$router.push('/create')">ADD EMPLOYEE</button>
   </div>
-  
 
   <!-- <div>
     <ol>
       <li v-for="element of employees" :key="element" @click="onShowEmployeeDetails(element.id)">Employee Name:{{element.name}}</li>
     </ol>
-  </div> -->
-<!--       
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav> -->
-
-  <RouterView />
+  </div> -->     
 </template>
-
 
 <style scoped>
 header {
@@ -84,7 +75,7 @@ header {
   margin: 0 auto 2rem;
 }
 
-nav {
+nav { 
   width: 100%;
   font-size: 12px;
   text-align: center;
